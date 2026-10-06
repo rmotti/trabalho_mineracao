@@ -14,6 +14,8 @@ Depois abra os notebooks em `notebooks/` e selecione o kernel `.venv`:
 1. `01_explorar_aisweb.ipynb`: mapa das rotas da API AISWEB.
 2. `02_insights_ml.ipynb`: exploração dos dados em busca de uma situação-problema de ML. Cruza a AISWEB com METAR histórico (IEM) e os voos da ANAC (VRA) de 2025. Na primeira execução baixa ~330 MB para `data/raw/` (pasta ignorada pelo git).
 
+As siglas e os termos técnicos dos notebooks (METAR, NOTAM, IMC, PR-AUC...) estão explicados em [`docs/glossario.md`](docs/glossario.md).
+
 Outros comandos: `make test`, `make lint`, `make format`, `make clean` (`make` sozinho lista todos).
 
 ## Organização
@@ -24,7 +26,7 @@ Outros comandos: `make test`, `make lint`, `make format`, `make clean` (`make` s
 │   ├── interim        <- dados intermediários, já transformados
 │   ├── processed      <- bases finais para modelagem
 │   └── raw            <- downloads originais: aisweb/, metar/, vra/
-├── docs
+├── docs               <- glossario.md: siglas e termos técnicos
 ├── models             <- modelos treinados
 ├── module_decea       <- código Python do projeto
 │   ├── config.py      <- caminhos do projeto e leitura do .env
