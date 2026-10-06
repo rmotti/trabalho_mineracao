@@ -1,0 +1,46 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "module_decea"
+version = "0.0.1"
+description = "Dados do DECEA (AISWEB), METAR e VRA/ANAC em busca de uma situação-problema de ML"
+authors = [
+  { name = "rmotti" },
+]
+
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "jinja2",
+    "matplotlib",
+    "numpy",
+    "pandas",
+    "python-dotenv",
+    "requests",
+    "scikit-learn",
+]
+requires-python = "~=3.12.0"
+
+[dependency-groups]
+dev = [
+    "ipykernel",
+    "pytest",
+    "ruff",
+]
+
+
+[tool.ruff]
+line-length = 120
+src = ["module_decea"]
+include = ["pyproject.toml", "module_decea/**/*.py", "tests/**/*.py"]
+
+[tool.ruff.lint]
+extend-select = ["I"]  # Add import sorting
+
+[tool.ruff.lint.isort]
+known-first-party = ["module_decea"]
+force-sort-within-sections = true

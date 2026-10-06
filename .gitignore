@@ -1,0 +1,19 @@
+# Dados baixados pelos notebooks (~330 MB). Só as .gitkeep vão para o git.
+/data/**
+!/data/**/
+!/data/**/.gitkeep
+
+# Credenciais da AISWEB
+.env
+
+# Ambiente e caches
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+.pytest_cache/
+.ruff_cache/
+
+# macOS
+.DS_Store
