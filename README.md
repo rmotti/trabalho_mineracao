@@ -18,6 +18,18 @@ As siglas e os termos técnicos dos notebooks (METAR, NOTAM, IMC, PR-AUC...) est
 
 Outros comandos: `make test`, `make lint`, `make format`, `make clean` (`make` sozinho lista todos).
 
+## Coleta diária de NOTAMs
+
+A AISWEB só mostra os NOTAMs vigentes agora. Para montar um histórico:
+
+```bash
+make agendar_notam                 # cron todo dia às 9h; outro horário: make agendar_notam NOTAM_HORA=12
+make desagendar_notam              # tira do cron
+tail ~/Library/Logs/decea-coleta-notam.log
+```
+
+Cada coleta salva um retrato em `data/raw/notam_coleta/`. No fim, `historico_notam()` (em `module_decea/dataset.py`) junta os retratos em uma linha por NOTAM, com a primeira e a última coleta em que ele apareceu. Se o computador estiver desligado ou dormindo no horário, o cron pula aquele dia.
+
 ## Organização
 
 ```
@@ -25,13 +37,13 @@ Outros comandos: `make test`, `make lint`, `make format`, `make clean` (`make` s
 │   ├── external       <- PDFs de cartas baixados no notebook 01
 │   ├── interim        <- dados intermediários, já transformados
 │   ├── processed      <- bases finais para modelagem
-│   └── raw            <- downloads originais: aisweb/, metar/, vra/
+│   └── raw            <- downloads originais: aisweb/, metar/, vra/, notam_coleta/
 ├── docs               <- glossario.md: siglas e termos técnicos
 ├── models             <- modelos treinados
 ├── module_decea       <- código Python do projeto
 │   ├── config.py      <- caminhos do projeto e leitura do .env
 │   ├── aisweb.py      <- cliente da API AISWEB
-│   ├── dataset.py     <- downloads com cache (AISWEB, METAR/IEM, VRA/ANAC)
+│   ├── dataset.py     <- downloads com cache (AISWEB, METAR/IEM, VRA/ANAC) e coleta de NOTAMs
 │   ├── metar.py       <- decodificação de METAR
 │   └── vra.py         <- leitura do VRA
 ├── notebooks          <- numerados na ordem de leitura
