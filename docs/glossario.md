@@ -33,7 +33,7 @@ Siglas e termos técnicos que aparecem nos notebooks (`01_explorar_aisweb`, `02_
 | **ICA** | Instrução do Comando da Aeronáutica, o nome das normas do DECEA. A **ICA 100-12** (Regras do Ar) define os limites de VMC usados no projeto. |
 | **ICAO** | *International Civil Aviation Organization* (em português, OACI), agência da ONU que padroniza a aviação civil: códigos de aeroportos, formato do METAR, do NOTAM etc. |
 | **ICAO Doc 8126** | Manual de Serviços de Informação Aeronáutica da ICAO, citado no notebook 02 como referência dos códigos Q do NOTAM. |
-| **IEM** | *Iowa Environmental Mesonet*, da Iowa State University. Arquivo público com METAR histórico de aeroportos do mundo todo. É a fonte de METAR do notebook 02. |
+| **IEM** | *Iowa Environmental Mesonet*, da Iowa State University. Arquivo público com METAR histórico de aeroportos do mundo todo. É a fonte de METAR do notebook 02. Para os aeroportos brasileiros, quase todo 2010 e 2011 vem remontado da base ISD da NOAA (marcado `IEM_DS3505`, sem nuvens nem fenômenos); `carregar_iem` descarta esses boletins, então o METAR do IEM só serve de 2012 em diante. Para antes disso, a fonte é a REDEMET. |
 | **REDEMET** | Rede de Meteorologia do Comando da Aeronáutica. Fonte oficial do DECEA para METAR e TAF históricos (`api-redemet.decea.mil.br`, exige chave gratuita). |
 | **VRA** | Voo Regular Ativo: base da ANAC com todos os voos regulares, horários previstos e reais, e situação (realizado ou cancelado). Ver [seção 8](#8-voos-e-o-vra). |
 
@@ -301,10 +301,10 @@ Termos que só aparecem no TAF:
 
 | Termo | Significado |
 |---|---|
-| **VRA** | Voo Regular Ativo, base da ANAC com um CSV por mês (~25 MB). Cada linha é uma etapa de voo, com horários previsto e real de partida e chegada. Lida por `module_decea/vra.py`. |
+| **VRA** | Voo Regular Ativo, base da ANAC com um CSV por mês (~25 MB). Cada linha é uma etapa de voo, com horários previsto e real de partida e chegada. Lida por `module_decea/vra.py`. A ANAC publica de 2000 até uns dois meses atrás; de 2010 em diante o formato é o mesmo, até 2009 é outro (vírgula, latin-1, sem aeronave nem assentos) e o código não lê. |
 | **Voo regular** | Voo de linha com horário publicado e vendido ao público, em oposição a voos extras e fretamentos. |
 | **Código DI** | Dígito identificador do tipo de voo. `0` = etapa regular, o filtro do projeto. Os outros valores (1–9, D, E) marcam voos extras, fretamentos, retornos etc. |
-| **Código Tipo Linha** | `N` = doméstica de passageiros (o filtro do projeto), `I` = internacional. `C` e `G` são linhas cargueiras. |
+| **Código Tipo Linha** | `N` = doméstica de passageiros (o filtro do projeto), `I` = internacional. `C` e `G` são linhas cargueiras. Até 2018 havia também `R` (regional, doméstica de passageiros), que o filtro inclui; de 2019 em diante tudo virou `N`. |
 | **Sigla ICAO da empresa** | Código de 3 letras da companhia: `AZU` Azul, `GLO` Gol, `TAM` LATAM Brasil, entre outras. |
 | **Equipamento** | Modelo da aeronave (coluna "Modelo Equipamento", renomeada para `aeronave`). |
 | **Partida/chegada prevista e real** | Horário programado e horário em que de fato aconteceu. O atraso é a diferença entre os dois. |
@@ -313,7 +313,8 @@ Termos que só aparecem no TAF:
 | **Propagação de atraso** | Um atraso empurra os voos seguintes do mesmo avião e da mesma tripulação. Por isso a taxa de atraso cresce ao longo do dia. |
 | **Disrupção** | Período em que a operação normal se rompe, com muitos atrasos e cancelamentos ao mesmo tempo (ex.: 10/12/2025). |
 | **Programação** | Grupo de variáveis da seção 8.1 do notebook 02 conhecidas antes do voo: empresa, rota, horário, avião, assentos, número de partidas na hora. |
-| **Fuso horário do VRA** | O arquivo não diz, mas os horários estão em horário de Brasília (UTC−3), enquanto o METAR está em UTC. Por isso `juntar_clima` soma 3 h (`deslocamento_h=3`) antes de cruzar as duas bases. |
+| **Fuso horário do VRA** | O arquivo não diz, mas todos os voos estão no horário oficial de Brasília (mesmo os de Recife ou Manaus), enquanto o METAR está em UTC. Até fevereiro de 2019 esse horário seguia o horário de verão (UTC−2 de outubro/novembro a fevereiro, UTC−3 no resto do ano). A coluna `partida_prev_utc` (função `para_utc` em `vra.py`) já faz a conversão certa para qualquer ano; os +3 h fixos de `juntar_clima` no notebook 02 só valem de 2019 em diante. Evidências: na noite em que o horário de verão começava, os voos que cruzavam a meia-noite aparecem ~55 min mais longos e ninguém parte entre 00:00 e 00:59; a grade dos voos de SP/RJ/Sul não muda de horário na troca; e, cruzando com o METAR de 2012 a 2019, +2 h alinha trovoada e atraso melhor do que +3 h nos meses de horário de verão, em todos os anos. |
+| **Lacunas do VRA** | Junho e julho de 2014 estão vazios no próprio site da ANAC. De outubro de 2015 a março de 2018 (menos fevereiro de 2016) a partida real está em branco em cerca de metade dos voos realizados, sobretudo Gol, LATAM e Avianca. Nesses voos o atraso fica desconhecido e `atrasado_30` sai `False`, o que subestima a taxa de atraso desses meses. |
 
 ## 9. Machine learning e mineração de dados
 

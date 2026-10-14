@@ -45,6 +45,9 @@ def carregar_iem(caminho):
     """Lê o CSV do IEM (station, valid, metar) e devolve um DataFrame decodificado."""
     bruto = pd.read_csv(caminho)
     bruto = bruto[~bruto["metar"].str.contains(" NIL", na=True)]
+    # Sem o boletim original (quase todo 2010 e 2011), o IEM remonta um da base ISD da NOAA, marcado com IEM_DS3505:
+    # sem nuvens nem fenômenos, decodificaria como céu limpo. Melhor a hora ficar sem dado.
+    bruto = bruto[~bruto["metar"].str.contains("IEM_DS3505", regex=False)]
     df = pd.DataFrame([decodificar(m) for m in bruto["metar"]], index=bruto.index)
     df.insert(0, "hora_utc", pd.to_datetime(bruto["valid"]))
     df.insert(0, "icao", bruto["station"])

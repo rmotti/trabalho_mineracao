@@ -12,7 +12,7 @@ cp .env.example .env   # e preencha AISWEB_API_KEY e AISWEB_API_PASS
 Depois abra os notebooks em `notebooks/` e selecione o kernel `.venv`:
 
 1. `01_explorar_aisweb.ipynb`: mapa das rotas da API AISWEB.
-2. `02_insights_ml.ipynb`: exploração dos dados em busca de uma situação-problema de ML. Cruza a AISWEB com METAR histórico (IEM) e os voos da ANAC (VRA) de 2025. Na primeira execução baixa ~330 MB para `data/raw/` (pasta ignorada pelo git).
+2. `02_insights_ml.ipynb`: exploração dos dados em busca de uma situação-problema de ML. Cruza a AISWEB com METAR histórico (IEM) e os voos da ANAC (VRA) de 2025. Na primeira execução baixa ~330 MB para `data/raw/` (pasta ignorada pelo git). Outros anos: `baixar_vra(ano)` e `baixar_metar_iem(aeroportos, ano)` baixam (VRA de 2010 em diante, no mesmo formato), e `carregar_vra(2023, 2024)` lê um ou mais anos.
 
 3. `03_modelo_atraso.ipynb`: modelo que prevê a **faixa de atraso** da partida (até 15 min, 15–30, 30–60, > 60) na véspera e 3 h antes do voo. Gradient boosting em árvores, validação temporal (treino jan–set, teste out–dez). Variáveis em `module_decea/features.py`, treino e métricas em `module_decea/modelagem.py`.
 

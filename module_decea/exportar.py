@@ -68,16 +68,16 @@ def montar_base(ano=2025):
     baixar_metar_iem(AEROPORTOS, ano)
     baixar_vra(ano)
 
-    metar = pd.concat([carregar_iem(RAW_DATA_DIR / f"metar/{icao}.csv") for icao in AEROPORTOS], ignore_index=True)
+    metar = pd.concat([carregar_iem(RAW_DATA_DIR / f"metar/{icao}_{ano}.csv") for icao in AEROPORTOS], ignore_index=True)
     metar = metar[~metar["speci"]]  # só METAR de hora cheia, como no notebook
 
-    v = voos_regulares_domesticos(carregar_vra())
+    v = voos_regulares_domesticos(carregar_vra(ano))
     v = v[v["origem"].isin(AEROPORTOS)].copy()
     v["mes"] = v["partida_prev"].dt.month
     v["dia_semana"] = v["partida_prev"].dt.dayofweek
     v["hora"] = v["partida_prev"].dt.hour
-    # VRA está em horário de Brasília (ver notebook 02, seção 6) -> +3 h para casar com o METAR em UTC
-    v["hora_utc"] = (v["partida_prev"] + pd.Timedelta(hours=3)).dt.floor("h")
+    # VRA está em horário de Brasília (ver notebook 02, seção 6) -> UTC para casar com o METAR
+    v["hora_utc"] = v["partida_prev_utc"].dt.floor("h")
 
     w = metar[["icao", "hora_utc"] + COLS_CLIMA]
     for lado, chave in [("o", "origem"), ("d", "destino")]:

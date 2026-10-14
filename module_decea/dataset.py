@@ -55,11 +55,11 @@ def historico_notam(pasta=RAW_DATA_DIR / "notam_coleta"):
 
 
 def baixar_metar_iem(estacoes, ano):
-    """METAR histórico do Iowa Environmental Mesonet (espelho público dos boletins do GTS)."""
+    """METAR histórico do Iowa Environmental Mesonet (espelho público dos boletins do GTS): um CSV por aeroporto e ano."""
     pasta = RAW_DATA_DIR / "metar"
     pasta.mkdir(parents=True, exist_ok=True)
     for icao in estacoes:
-        destino = pasta / f"{icao}.csv"
+        destino = pasta / f"{icao}_{ano}.csv"
         if destino.exists():
             continue
         url = ("https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py"

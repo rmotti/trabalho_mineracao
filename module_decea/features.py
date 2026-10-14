@@ -6,7 +6,7 @@ Horizontes (o modelo só pode usar o que já se sabe no instante de referência)
     "3h":      3 h antes da partida prevista. Tudo da véspera + METAR da origem e do destino nesse instante,
                tendência do clima nas 3 h anteriores e atraso recente na origem, no destino e na rede.
 
-Os horários do VRA estão em Brasília (UTC-3); o METAR está em UTC.
+Os horários do VRA estão em Brasília (UTC-3, ou UTC-2 no horário de verão até 2019); o METAR está em UTC.
 """
 
 import numpy as np
@@ -61,9 +61,9 @@ TENDENCIA = ["vis_m", "teto_ft", "vento_kt", "spread", "qnh"]
 # --------------------------------------------------------------------------------------------------------------------
 # Leitura
 # --------------------------------------------------------------------------------------------------------------------
-def carregar_metar_horario():
+def carregar_metar_horario(ano=2025):
     """METAR de hora cheia dos 10 aeroportos, em grade horária completa (horas sem boletim ficam NaN)."""
-    m = pd.concat([carregar_iem(RAW_DATA_DIR / f"metar/{icao}.csv") for icao in AEROPORTOS], ignore_index=True)
+    m = pd.concat([carregar_iem(RAW_DATA_DIR / f"metar/{icao}_{ano}.csv") for icao in AEROPORTOS], ignore_index=True)
     m = m[~m["speci"]].drop_duplicates(["icao", "hora_utc"])
     m["spread"] = m["temp_c"] - m["orvalho_c"]  # ar perto da saturação -> nevoeiro
     cols = [
@@ -89,11 +89,11 @@ def carregar_metar_horario():
     return m.set_index(["icao", "hora_utc"])[cols].reindex(grade).reset_index()
 
 
-def carregar_voos():
+def carregar_voos(ano=2025):
     """Voos regulares domésticos saindo dos 10 aeroportos (inclui cancelados, usados só para contar a demanda)."""
-    v = voos_regulares_domesticos(carregar_vra())
+    v = voos_regulares_domesticos(carregar_vra(ano))
     v = v[v["origem"].isin(AEROPORTOS)].copy()
-    v["partida_utc"] = v["partida_prev"] + pd.Timedelta(hours=3)
+    v["partida_utc"] = v["partida_prev_utc"]
     v["hora_bin"] = v["partida_utc"].dt.floor("h")
     v["dia"] = v["partida_prev"].dt.normalize()  # dia local
     v["voo_id"] = v["empresa"] + v["voo"].astype(str)
